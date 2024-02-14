@@ -1,32 +1,33 @@
 // import '../styles/main.scss'; // You have to import your styles for them to work. Comment in this line
+import { students, voldysArmy } from '../utils/data/studentArrays';
+import houses from '../utils/data/houses';
+// TODO go to settings to change format to single quotes
 const renderToDOM = (divId, content) => {
   const selectedDiv = document.querySelector(divId);
   selectedDiv.innerHTML = content;
 };
-const houses = [
-  {
-    house: 'gryffindor',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/1/16/Gryffindor_crest.png'
-  },
-  {
-    house: 'slytherin',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/4/45/Slytherin_Crest.png'
-  },
-  {
-    house: 'hufflepuff',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/5/5e/Hufflepuff_crest.png'
-  },
-  {
-    house: 'ravenclaw',
-    crest:
-      'https://static.wikia.nocookie.net/pottermore/images/4/4f/Ravenclaw_crest.png'
-  }
-];
-const students = [];
-const voldysArmy = []; // starts as an empty array
+
+const htmlStructure = () => {
+  const domString = `
+    <div id="header-container" class="header mb-3"></div>
+    <div id="form-container" class="container mb-3 text-center"></div>
+    <div id="filter-container" class="container mb-3"></div>
+    <div id="student-container" class="container d-flex"></div>
+    `;
+  renderToDOM('#app', domString);
+};
+const header = () => {
+  const domString = `<div class="container">
+    <h1>Welcome to Hoggy Hogwarts Sorting Hat!</h1>
+    <p>
+      Hmm, difficult. VERY difficult. <br />Plenty of courage, I see.
+      <br />Not a bad mind, either. There's talent, oh yes. <br />And a
+      thirst to prove yourself. <br />But where to put you?
+    </p>
+  </div>`;
+
+  renderToDOM('#header-container', domString);
+};
 
 const filterBtnRow = () => {
   const domString = `<div class="btn-group" role="group" aria-label="Basic example">
@@ -43,21 +44,12 @@ const filterBtnRow = () => {
 // Create a new ID for the students
 const studentsOnDom = (array) => {
   if (array.length) {
-    const idArray = array.map((el) => el.id);
+    const idArray = houses.map((house) => house.id);
     return Math.max(...idArray) + 1;
   }
   return 0;
 };
-const htmlStructure = () => {
-  const domString = `
-    <div id="header-container" class="header mb-3"></div>
-    <div id="form-container" class="container mb-3 text-center"></div>
-    <div id="filter-container" class="container mb-3"></div>
-    <div id="student-container" class="container d-flex"></div>
-    `;
 
-  renderToDOM('#app', domString);
-};
 // add form to DOM on start-sorting click.
 // Add events for form after the form is on the DOM
 const form = () => {
@@ -74,19 +66,6 @@ const form = () => {
 </form>`;
 
   renderToDOM('#form-container', domString);
-};
-
-const header = () => {
-  const domString = `<div class="container">
-    <h1>Welcome to Hoggy Hogwarts Sorting Hat!</h1>
-    <p>
-      Hmm, difficult. VERY difficult. <br />Plenty of courage, I see.
-      <br />Not a bad mind, either. There's talent, oh yes. <br />And a
-      thirst to prove yourself. <br />But where to put you?
-    </p>
-  </div>`;
-
-  renderToDOM('#header-container', domString);
 };
 
 const startSortingBtn = () => {
@@ -125,7 +104,7 @@ const sortStudent = (e) => {
 };
   // has to be put on the DOM after form is on DOM, not before
   // on form submit, sort student
-document.querySelector('#sorting').addEventListener('submit', sortStudent);
+
 const events = () => {
   // get form on the DOM on button click
   document.querySelector('#start-sorting').addEventListener('click', () => {
@@ -134,22 +113,20 @@ const events = () => {
     filterBtnRow(); // filter buttons
     studentAreas(); // students and voldy's army divs
   });
-
+  document.querySelector('#sorting').addEventListener('submit', sortStudent);
   // target expel buttons to move to voldys army
-  document
-    .querySelector('#student-container')
-    .addEventListener('click', (e) => {
-      if (e.target.id.includes('expel')) {
-        const [, id] = e.target.id.split('--');
-        const index = students.findIndex((student) => student.id === Number(id));
+  document.querySelector('#student-container').addEventListener('click', (e) => {
+    if (e.target.id.includes('expel')) {
+      const [, id] = e.target.id.split('--');
+      const index = students.findIndex((student) => student.id === Number(id));
 
-        // move from one array to another
-        voldysArmy.push(...students.splice(index, 1));
-        // get both sets of students on the DOM
-        studentsOnDom('#students', students);
-        studentsOnDom('#voldy', voldysArmy);
-      }
-    });
+      // move from one array to another
+      voldysArmy.push(...students.splice(index, 1));
+      // get both sets of students on the DOM
+      studentsOnDom('#students', students);
+      studentsOnDom('#voldy', voldysArmy);
+    }
+  });
 
   // target filter buttons on Dom
   document.querySelector('#filter-container').addEventListener('click', (e) => {
@@ -172,4 +149,5 @@ const startApp = () => {
   startSortingBtn();
   events(); // always load last
 };
+
 startApp();
